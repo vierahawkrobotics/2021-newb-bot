@@ -52,8 +52,8 @@ public class Robot extends TimedRobot {
   WPI_TalonSRX frontRightMotor = new WPI_TalonSRX(2);
 
   /* Follower Talons + Victors for six motor drives */
-  WPI_TalonSRX leftSlave1 = new WPI_TalonSRX(5);
-  WPI_TalonSRX rightSlave1 = new WPI_TalonSRX(7);
+  WPI_TalonSRX leftFollower1 = new WPI_TalonSRX(3);
+  WPI_TalonSRX rightFollower1 = new WPI_TalonSRX(4);
 
   /* Construct drivetrain by providing master motor controllers */
   DifferentialDrive drive = new DifferentialDrive(frontLeftMotor, frontRightMotor);
@@ -68,15 +68,15 @@ public class Robot extends TimedRobot {
     /* Factory Default all hardware to prevent unexpected behaviour */
     frontLeftMotor.configFactoryDefault();
     frontRightMotor.configFactoryDefault();
-    leftSlave1.configFactoryDefault();
-    rightSlave1.configFactoryDefault();
+    leftFollower1.configFactoryDefault();
+    rightFollower1.configFactoryDefault();
 
     /**
      * Take our extra motor controllers and have them follow the Talons updated in
      * arcadeDrive
      */
-    leftSlave1.follow(frontLeftMotor);
-    rightSlave1.follow(frontRightMotor);
+    leftFollower1.follow(frontLeftMotor);
+    rightFollower1.follow(frontRightMotor);
 
     /**
      * Drive robot forward and make sure all motors spin the correct way. Toggle
@@ -84,8 +84,8 @@ public class Robot extends TimedRobot {
      */
     frontLeftMotor.setInverted(false); // <<<<<< Adjust this until robot drives forward when stick is forward
     frontRightMotor.setInverted(true); // <<<<<< Adjust this until robot drives forward when stick is forward
-    leftSlave1.setInverted(InvertType.FollowMaster);
-    rightSlave1.setInverted(InvertType.FollowMaster);
+    leftFollower1.setInverted(InvertType.FollowMaster);
+    rightFollower1.setInverted(InvertType.FollowMaster);
     /*
      * Talon FX does not need sensor phase set for its integrated sensor This is
      * because it will always be correct if the selected feedback device is
