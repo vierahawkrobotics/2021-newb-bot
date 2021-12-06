@@ -41,12 +41,19 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 public class Robot extends TimedRobot {
+	/* set up autonomous program selection on smart dashboard */
+  private static final String DoNothing = "Do Nothing";
+  private static final String CrossLine = "Cross The Line";
+  private String autoSelected;
+  private final SendableChooser<String> chooser = new SendableChooser<>();														  
   /* Master Talons for arcade drive */
   WPI_TalonSRX frontLeftMotor = new WPI_TalonSRX(1);
   WPI_TalonSRX frontRightMotor = new WPI_TalonSRX(2);
@@ -64,7 +71,11 @@ public class Robot extends TimedRobot {
   /**
    * This function is called once at the beginning during operator control
    */
-  public void teleopInit() {
+  public void robotInit() {
+    /* send autonomous options to smart dashboard */
+    chooser.setDefaultOption(DoNothing, DoNothing);
+    chooser.addOption(CrossLine, CrossLine);
+    SmartDashboard.putData("Auto choices", chooser);
     /* Factory Default all hardware to prevent unexpected behaviour */
     frontLeftMotor.configFactoryDefault();
     frontRightMotor.configFactoryDefault();
@@ -103,6 +114,24 @@ public class Robot extends TimedRobot {
      * forward. Change to 'false' so positive/green-LEDs moves robot forward
      */
     drive.setRightSideInverted(false); // do not change this
+  }
+  public void autonomousInit() {
+    autoSelected = chooser.getSelected();
+    System.out.println("Auto selected: " + autoSelected);
+  }
+
+  /** This function is called periodically during autonomous. */
+  @Override
+  public void autonomousPeriodic() {
+    switch (autoSelected) {
+      case CrossLine:
+        Autonomous2.crossLine(drive);
+        break;
+      case DoNothing:
+      default:
+        Autonomous1.doNothingAuto(drive);
+        break;
+    }
   }
 
   /**
