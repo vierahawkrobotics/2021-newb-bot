@@ -49,11 +49,12 @@ import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 public class Robot extends TimedRobot {
-	/* set up autonomous program selection on smart dashboard */
+  /* set up autonomous program selection on smart dashboard */
   private static final String DoNothing = "Do Nothing";
   private static final String CrossLine = "Cross The Line";
+  private static final String EncoderMove = "Encoder Move";
   private String autoSelected;
-  private final SendableChooser<String> chooser = new SendableChooser<>();														  
+  private final SendableChooser<String> chooser = new SendableChooser<>();
   /* Master Talons for arcade drive */
   WPI_TalonSRX frontLeftMotor = new WPI_TalonSRX(1);
   WPI_TalonSRX frontRightMotor = new WPI_TalonSRX(2);
@@ -75,6 +76,7 @@ public class Robot extends TimedRobot {
     /* send autonomous options to smart dashboard */
     chooser.setDefaultOption(DoNothing, DoNothing);
     chooser.addOption(CrossLine, CrossLine);
+    chooser.addOption(EncoderMove, EncoderMove);
     SmartDashboard.putData("Auto choices", chooser);
     /* Factory Default all hardware to prevent unexpected behaviour */
     frontLeftMotor.configFactoryDefault();
@@ -114,7 +116,28 @@ public class Robot extends TimedRobot {
      * forward. Change to 'false' so positive/green-LEDs moves robot forward
      */
     drive.setRightSideInverted(false); // do not change this
+
+    /*
+     * flip value so that motor output and sensor velocity are the same polarity. Do
+     * this before closed-looping
+     */
+    frontLeftMotor.setSensorPhase(false); // <<<<<< Adjust this
+    frontRightMotor.setSensorPhase(false); // <<<<<< Adjust this
   }
+
+  /**
+   * This function is called every robot packet, no matter the mode. Use this for
+   * items like diagnostics that you want ran during disabled, autonomous,
+   * teleoperated and test.
+   *
+   * <p>
+   * This runs after the mode specific periodic functions, but before LiveWindow
+   * and SmartDashboard integrated updating.
+   */
+  @Override
+  public void robotPeriodic() {
+  }
+
   public void autonomousInit() {
     autoSelected = chooser.getSelected();
     System.out.println("Auto selected: " + autoSelected);
@@ -127,11 +150,19 @@ public class Robot extends TimedRobot {
       case CrossLine:
         Autonomous2.crossLine(drive);
         break;
+      case EncoderMove:
+        Autonomous3.encoderMove(frontLeftMotor, frontRightMotor);
+        break;
       case DoNothing:
       default:
         Autonomous1.doNothingAuto(drive);
         break;
     }
+  }
+
+  /** This function is called once when teleop is enabled. */
+  @Override
+  public void teleopInit() {
   }
 
   /**
@@ -141,14 +172,6 @@ public class Robot extends TimedRobot {
     /* Gamepad processing */
     double forward = -1.0 * joy.getY(); // Sign this so forward is positive
     double turn = +1.0 * joy.getZ(); // Sign this so right is positive
-
-    /* Deadband - within 10% joystick, make it zero */
-    if (Math.abs(forward) < 0.10) {
-      forward = 0;
-    }
-    if (Math.abs(turn) < 0.10) {
-      turn = 0;
-    }
 
     /**
      * Print the joystick values to sign them, comment out this line after checking
