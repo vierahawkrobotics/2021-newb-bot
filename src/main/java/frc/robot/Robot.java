@@ -56,12 +56,12 @@ public class Robot extends TimedRobot {
   private String autoSelected;
   private final SendableChooser<String> chooser = new SendableChooser<>();
   /* Master Talons for arcade drive */
-  WPI_TalonSRX frontLeftMotor = new WPI_TalonSRX(1);
-  WPI_TalonSRX frontRightMotor = new WPI_TalonSRX(2);
+  WPI_TalonSRX frontLeftMotor = new WPI_TalonSRX(0);
+  WPI_TalonSRX frontRightMotor = new WPI_TalonSRX(1);
 
   /* Follower Talons + Victors for six motor drives */
-  WPI_TalonSRX leftFollower1 = new WPI_TalonSRX(3);
-  WPI_TalonSRX rightFollower1 = new WPI_TalonSRX(4);
+  WPI_TalonSRX leftFollower1 = new WPI_TalonSRX(2);
+  WPI_TalonSRX rightFollower1 = new WPI_TalonSRX(3);
 
   /* Construct drivetrain by providing master motor controllers */
   DifferentialDrive drive = new DifferentialDrive(frontLeftMotor, frontRightMotor);
@@ -141,6 +141,16 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     autoSelected = chooser.getSelected();
     System.out.println("Auto selected: " + autoSelected);
+    switch (autoSelected) {
+      case CrossLine:
+        break;
+      case EncoderMove:
+        Autonomous3.init(frontLeftMotor, frontRightMotor);
+        break;
+      case DoNothing:
+      default:
+        break;
+    }
   }
 
   /** This function is called periodically during autonomous. */
