@@ -102,11 +102,11 @@ public class Robot extends TimedRobot {
      * diff drive assumes (by default) that right side must be negative to move
      * forward. Change to 'false' so positive/green-LEDs moves robot forward
      */
-    drive.setRightSideInverted(false); // do not change this
+    //drive.setRightSideInverted(false); // do not change this
   }
 
   /**
-   * This function is called periodically during operator control
+   * This function is called periodically during operatxxor control
    */
   public void teleopPeriodic() {
     /* Gamepad processing */
